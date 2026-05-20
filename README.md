@@ -5,14 +5,19 @@
 ## 依赖
 
 - **JRE 17+**
-- **[Apktool](https://apktool.org/) 2.x**：需在 `PATH` 中，或通过 `--apktool` 指定 `apktool.jar` 或可执行文件
+- **[Apktool](https://apktool.org/) 2.x**：仓库自带 [tools/apktool.jar](tools/apktool.jar)，也可使用 `PATH` 中的 apktool 或通过 `--apktool` 指定路径
 
 ## 直接下载（免构建）
 
-仓库已包含可执行 fat JAR：
+仓库已包含可执行 fat JAR 与 Apktool：
 
-- 文件：[releases/apk-lang-compare-1.0.0-all.jar](releases/apk-lang-compare-1.0.0-all.jar)
-- 下载后运行：`java -jar apk-lang-compare-1.0.0-all.jar app1.apk app2.apk --apktool path\to\apktool.jar`
+- 比较工具：[releases/apk-lang-compare-1.0.0-all.jar](releases/apk-lang-compare-1.0.0-all.jar)
+- Apktool：[tools/apktool.jar](tools/apktool.jar)
+- 克隆仓库后运行：
+
+```powershell
+java -jar releases/apk-lang-compare-1.0.0-all.jar app1.apk app2.apk --apktool tools/apktool.jar
+```
 
 ## 构建
 
@@ -37,7 +42,7 @@ gradle wrapper
 ```bash
 java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk
 java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk -o report.json
-java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk --apktool C:\tools\apktool.jar -q
+java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk --apktool tools/apktool.jar -q
 ```
 
 ### 选项
