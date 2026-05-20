@@ -7,6 +7,13 @@
 - **JRE 17+**
 - **[Apktool](https://apktool.org/) 2.x**：需在 `PATH` 中，或通过 `--apktool` 指定 `apktool.jar` 或可执行文件
 
+## 直接下载（免构建）
+
+仓库已包含可执行 fat JAR：
+
+- 文件：[releases/apk-lang-compare-1.0.0-all.jar](releases/apk-lang-compare-1.0.0-all.jar)
+- 下载后运行：`java -jar apk-lang-compare-1.0.0-all.jar app1.apk app2.apk --apktool path\to\apktool.jar`
+
 ## 构建
 
 ```bash
