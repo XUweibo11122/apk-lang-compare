@@ -72,7 +72,7 @@ java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk --apkt
 
 ## 限制
 
-- 需能成功用 apktool 解码的 APK
+- 需能成功用 apktool 解码的 APK（内部使用 `apktool d -f -s`：只解码资源，不解码 smali）
 - `values-night`、`values-v21` 等非语言配置目录若含 string 也会参与比较
 - 同语言同 key 在多个 XML 中出现时，后者覆盖前者并产生 warning
 

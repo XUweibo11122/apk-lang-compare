@@ -59,11 +59,29 @@ public final class ResourceComparator {
         warnings.addAll(extraction1.warnings());
         warnings.addAll(extraction2.warnings());
 
+        int apk1Count = countStrings(map1);
+        int apk2Count = countStrings(map2);
+        if (apk1Count == 0) {
+            warnings.add("APK1: extracted 0 <string> entries — resources may not have been decoded");
+        }
+        if (apk2Count == 0) {
+            warnings.add("APK2: extracted 0 <string> entries — resources may not have been decoded");
+        }
+
         boolean identical = !localeDiff.hasDifferences()
                 && byLocale.isEmpty()
                 && warnings.isEmpty();
 
-        return new CompareReport(identical, apk1Path, apk2Path, localeDiff, byLocale, warnings);
+        return new CompareReport(
+                identical, apk1Path, apk2Path, localeDiff, byLocale, warnings, apk1Count, apk2Count);
+    }
+
+    static int countStrings(Map<String, Map<String, String>> localeToStrings) {
+        int total = 0;
+        for (Map<String, String> strings : localeToStrings.values()) {
+            total += strings.size();
+        }
+        return total;
     }
 
     static LocaleCompareResult compareLocale(Map<String, String> apk1, Map<String, String> apk2) {

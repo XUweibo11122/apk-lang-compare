@@ -23,6 +23,9 @@ public final class JsonReportWriter {
         root.put("identical", report.identical());
         root.put("apk1", report.apk1());
         root.put("apk2", report.apk2());
+        ObjectNode stats = root.putObject("stats");
+        stats.put("apk1StringCount", report.apk1StringCount());
+        stats.put("apk2StringCount", report.apk2StringCount());
 
         ObjectNode localeDiff = root.putObject("localeDiff");
         localeDiff.set("onlyInApk1", toArray(report.localeDiff().onlyInApk1()));

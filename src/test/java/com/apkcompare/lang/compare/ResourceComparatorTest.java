@@ -86,6 +86,34 @@ class ResourceComparatorTest {
     }
 
     @Test
+    void emptyExtractionIsNotIdentical() {
+        ExtractionResult empty1 = ExtractionResult.builder().build();
+        ExtractionResult empty2 = ExtractionResult.builder().build();
+
+        CompareReport report = comparator.compare("/a.apk", "/b.apk", empty1, empty2);
+        assertFalse(report.identical());
+        assertEquals(0, report.apk1StringCount());
+        assertEquals(0, report.apk2StringCount());
+        assertTrue(report.warnings().stream().anyMatch(w -> w.contains("APK1")));
+        assertTrue(report.warnings().stream().anyMatch(w -> w.contains("APK2")));
+    }
+
+    @Test
+    void differentStringCountsAreNotIdentical() {
+        ExtractionResult apk1 = ExtractionResult.builder()
+                .putLocale("default", Map.of("a", "1", "b", "2", "c", "3"))
+                .build();
+        ExtractionResult apk2 = ExtractionResult.builder()
+                .putLocale("default", Map.of("a", "1"))
+                .build();
+
+        CompareReport report = comparator.compare("/a.apk", "/b.apk", apk1, apk2);
+        assertFalse(report.identical());
+        assertEquals(3, report.apk1StringCount());
+        assertEquals(1, report.apk2StringCount());
+    }
+
+    @Test
     void compareLocaleDirect() {
         LocaleCompareResult result = ResourceComparator.compareLocale(
                 Map.of("a", "1", "b", "2"),

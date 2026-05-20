@@ -102,7 +102,7 @@ public final class ApktoolResourceExtractor implements StringResourceExtractor {
     }
 
     private void runApktool(Path apkPath, Path outputDir) throws IOException, InterruptedException {
-        List<String> command = buildApktoolCommand(apkPath, outputDir);
+        List<String> command = buildDecodeCommand(apktoolPath, apkPath, outputDir);
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
         Process process = pb.start();
@@ -113,7 +113,7 @@ public final class ApktoolResourceExtractor implements StringResourceExtractor {
         }
     }
 
-    private List<String> buildApktoolCommand(Path apkPath, Path outputDir) {
+    static List<String> buildDecodeCommand(Path apktoolPath, Path apkPath, Path outputDir) {
         List<String> command = new ArrayList<>();
         String fileName = apktoolPath.getFileName().toString().toLowerCase();
         if (fileName.endsWith(".jar")) {
@@ -125,7 +125,8 @@ public final class ApktoolResourceExtractor implements StringResourceExtractor {
         }
         command.add("d");
         command.add("-f");
-        command.add("-r");
+        // -s = --no-src: decode resources only, skip smali/dex (-r would mean --no-res!)
+        command.add("-s");
         command.add(apkPath.toAbsolutePath().toString());
         command.add("-o");
         command.add(outputDir.toAbsolutePath().toString());

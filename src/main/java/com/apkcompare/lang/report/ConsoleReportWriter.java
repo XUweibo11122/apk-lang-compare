@@ -25,6 +25,9 @@ public final class ConsoleReportWriter {
 
         out.println("APK1: " + report.apk1());
         out.println("APK2: " + report.apk2());
+        out.printf(
+                "Extracted strings: APK1=%d, APK2=%d%n",
+                report.apk1StringCount(), report.apk2StringCount());
 
         if (!report.localeDiff().onlyInApk1().isEmpty()) {
             out.println("Locales only in APK1: " + report.localeDiff().onlyInApk1());

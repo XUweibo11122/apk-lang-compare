@@ -6,9 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.apkcompare.lang.model.ExtractionResult;
 import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ApktoolResourceExtractorTest {
+
+    @Test
+    void decodeCommandUsesNoSrcNotNoRes() {
+        List<String> cmd = ApktoolResourceExtractor.buildDecodeCommand(
+                Path.of("tools/apktool.jar"), Path.of("a.apk"), Path.of("out"));
+        assertTrue(cmd.contains("-s"), "must pass -s (--no-src) to decode resources without smali");
+        assertFalse(cmd.contains("-r"), "must not pass -r (--no-res) which skips resource decode");
+    }
 
     @Test
     void scanDecodedResourcesFromFixture() throws Exception {
