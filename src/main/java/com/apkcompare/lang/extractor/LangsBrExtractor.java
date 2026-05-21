@@ -1,5 +1,6 @@
 package com.apkcompare.lang.extractor;
 
+import com.apkcompare.lang.compare.ResourceComparator;
 import com.apkcompare.lang.model.ExtractionResult;
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,6 +115,9 @@ public final class LangsBrExtractor {
         ExtractionResult fromLpk;
         if (isZipMagic(lpkBytes)) {
             fromLpk = LpkZipStringScanner.scan(lpkBytes, sourceLabel, localeHint);
+            if (ResourceComparator.countStrings(fromLpk.localeToStrings()) == 0) {
+                fromLpk = decodeLpkWithApktool(lpkBytes, sourceLabel, localeHint);
+            }
         } else {
             fromLpk = decodeLpkWithApktool(lpkBytes, sourceLabel, localeHint);
         }
@@ -136,24 +140,61 @@ public final class LangsBrExtractor {
 
     private ExtractionResult decodeLpkWithApktool(byte[] lpkBytes, String sourceLabel, String localeHint)
             throws Exception {
-        Path tempLpk = Files.createTempFile("apk-lang-", ".lpk");
+        Path tempApk = Files.createTempFile("apk-lang-", ".apk");
         Path tempOut = Files.createTempDirectory("apk-lang-lpk-");
         try {
-            Files.write(tempLpk, lpkBytes);
+            Files.write(tempApk, lpkBytes);
             ApktoolResourceExtractor apktool = new ApktoolResourceExtractor(apktoolPath, true);
-            ExtractionResult decoded = apktool.extractToDirectory(tempLpk, tempOut);
+            ExtractionResult decoded = apktool.extractToDirectory(tempApk, tempOut);
+            decoded = applyLocaleHint(decoded, localeHint, sourceLabel);
             if (decoded.localeToStrings().isEmpty()) {
-                decoded = ExtractionResult.builder()
+                return ExtractionResult.builder()
                         .addWarning(String.format(
-                                "LPK %s: apktool decoded but no strings found (hint locale %s)",
+                                "LPK %s: apktool decoded resources.arsc but no <string> entries (locale hint %s)",
                                 sourceLabel, localeHint))
                         .build();
             }
             return decoded;
         } finally {
-            Files.deleteIfExists(tempLpk);
+            Files.deleteIfExists(tempApk);
             deleteRecursive(tempOut);
         }
+    }
+
+    /**
+     * Resource-only LPKs often decode to a single {@code default} bucket; map to filename locale (e.g. base-vi → vi).
+     */
+    static ExtractionResult applyLocaleHint(ExtractionResult decoded, String localeHint, String sourceLabel) {
+        if (localeHint == null || localeHint.isBlank()) {
+            return decoded;
+        }
+        Map<String, Map<String, String>> locales = decoded.localeToStrings();
+        if (locales.containsKey(localeHint)) {
+            return decoded;
+        }
+        Map<String, String> defaultStrings = locales.get("default");
+        if (defaultStrings == null || defaultStrings.isEmpty()) {
+            return decoded;
+        }
+        if (locales.size() == 1) {
+            ExtractionResult.Builder builder = ExtractionResult.builder();
+            for (String w : decoded.warnings()) {
+                builder.addWarning(w);
+            }
+            builder.putLocale(localeHint, defaultStrings);
+            return builder.build();
+        }
+        ExtractionResult.Builder builder = ExtractionResult.builder();
+        for (String w : decoded.warnings()) {
+            builder.addWarning(w);
+        }
+        for (Map.Entry<String, Map<String, String>> e : locales.entrySet()) {
+            builder.putLocale(e.getKey(), e.getValue());
+        }
+        builder.addWarning(String.format(
+                "LPK %s: multiple locales after decode; could not map default bucket to '%s'",
+                sourceLabel, localeHint));
+        return builder.build();
     }
 
     private static byte[] readZipEntryBytes(ZipInputStream zis, ZipEntry entry) throws IOException {

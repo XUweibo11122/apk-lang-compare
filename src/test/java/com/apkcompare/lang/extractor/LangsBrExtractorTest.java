@@ -38,5 +38,17 @@ class LangsBrExtractorTest {
     void lpkFilenameLocaleTag() {
         assertEquals("zh-CN", LpkFilenameParser.toLocaleTag("zh-rCN.lpk"));
         assertEquals("en", LpkFilenameParser.toLocaleTag("en.lpk"));
+        assertEquals("vi", LpkFilenameParser.toLocaleTag("base-vi.lpk"));
+        assertEquals("zu", LpkFilenameParser.toLocaleTag("base-zu.lpk"));
+    }
+
+    @Test
+    void applyLocaleHintMapsDefaultBucket() {
+        ExtractionResult decoded = ExtractionResult.builder()
+                .putLocale("default", java.util.Map.of("key1", "value1"))
+                .build();
+        ExtractionResult mapped = LangsBrExtractor.applyLocaleHint(decoded, "vi", "base-vi.lpk");
+        assertEquals("value1", mapped.localeToStrings().get("vi").get("key1"));
+        assertFalse(mapped.localeToStrings().containsKey("default"));
     }
 }

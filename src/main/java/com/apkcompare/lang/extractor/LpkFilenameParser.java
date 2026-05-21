@@ -14,6 +14,9 @@ public final class LpkFilenameParser {
             base = base.substring(0, dot);
         }
         base = base.replace('_', '-');
+        if (base.startsWith("base-")) {
+            base = base.substring("base-".length());
+        }
         if ("default".equalsIgnoreCase(base) || "values".equalsIgnoreCase(base)) {
             return "default";
         }

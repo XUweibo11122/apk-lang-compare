@@ -101,7 +101,9 @@ JSON 示例：
 3. 每个 `.lpk` 按 ZIP 解析其中的 `res/values*/**/*.xml` 的 `<string>`（若非 ZIP 则回退 apktool 解码）
 4. 与主包 apktool 解码结果合并后，再与另一个 APK 做完整 diff
 
-`.lpk` 需为由资源 APK 导出的 ZIP 结构（含 `res/values-*`）；文件名用于推断语言，如 `zh-rCN.lpk` → `zh-CN`。
+`.lpk` 通常为 ZIP 包，内为二进制 `resources.arsc`（运行时解压使用，**不含** `res/values*` XML）。工具会先尝试读 XML；若无，则用 **apktool 解码 resources.arsc** 再提取 `<string>`。
+
+文件名用于推断语言，如 `base-vi.lpk` → `vi`，`zh-rCN.lpk` → `zh-CN`。
 
 ### 退出码
 

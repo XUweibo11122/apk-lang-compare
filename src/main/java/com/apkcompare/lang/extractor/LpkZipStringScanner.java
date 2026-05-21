@@ -21,6 +21,7 @@ final class LpkZipStringScanner {
         ExtractionResult.Builder result = ExtractionResult.builder();
         Map<String, Map<String, String>> localeToStrings = new TreeMap<>();
         boolean foundValues = false;
+        boolean hasResourcesArsc = false;
 
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(lpkBytes))) {
             ZipEntry entry;
@@ -29,6 +30,9 @@ final class LpkZipStringScanner {
                     continue;
                 }
                 String name = entry.getName().replace('\\', '/');
+                if (name.endsWith("resources.arsc")) {
+                    hasResourcesArsc = true;
+                }
                 if (!name.endsWith(".xml")) {
                     continue;
                 }
@@ -48,9 +52,10 @@ final class LpkZipStringScanner {
             }
         }
 
-        if (!foundValues && localeHint != null && !localeHint.isBlank()) {
+        // Binary resources.arsc-only packs are normal; caller falls back to apktool decode.
+        if (!foundValues && !hasResourcesArsc && localeHint != null && !localeHint.isBlank()) {
             result.addWarning(String.format(
-                    "LPK %s: no res/values* XML found in zip; cannot extract strings", lpkName));
+                    "LPK %s: no res/values* XML or resources.arsc found in zip", lpkName));
         }
         for (Map.Entry<String, Map<String, String>> e : localeToStrings.entrySet()) {
             result.putLocale(e.getKey(), e.getValue());
