@@ -17,6 +17,11 @@ public class ApkLangCli implements Runnable {
     public static final int EXIT_ERROR = 2;
 
     public static void main(String[] args) {
+        try {
+            com.aayushatharva.brotli4j.Brotli4jLoader.ensureAvailability();
+        } catch (UnsatisfiedLinkError e) {
+            System.err.println("Warning: Brotli native library unavailable; langs/*.br extraction may fail.");
+        }
         CommandLine cmd = new CommandLine(new ApkLangCli());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
             Throwable cause = ex.getCause() != null ? ex.getCause() : ex;

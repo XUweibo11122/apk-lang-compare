@@ -2,6 +2,8 @@ package com.apkcompare.lang;
 
 import com.apkcompare.lang.compare.ResourceComparator;
 import com.apkcompare.lang.extractor.ApktoolResourceExtractor;
+import com.apkcompare.lang.extractor.ExtractionMerger;
+import com.apkcompare.lang.extractor.LangsBrExtractor;
 import com.apkcompare.lang.model.ExtractionResult;
 import com.apkcompare.lang.report.ExtractionMapWriter;
 import java.nio.file.Files;
@@ -33,6 +35,9 @@ public class DumpCommand implements Callable<Integer> {
     @Option(names = "--apktool", description = "Path to apktool.jar or apktool executable")
     private Path apktool;
 
+    @Option(names = "--no-langs", description = "Skip langs/*.br lpk language packs inside APK")
+    private boolean noLangs;
+
     @Override
     public Integer call() throws Exception {
         ApkValidation.validateApk(apk, "apk");
@@ -42,6 +47,10 @@ public class DumpCommand implements Callable<Integer> {
 
         ApktoolResourceExtractor extractor = new ApktoolResourceExtractor(apktoolPath, true);
         ExtractionResult extraction = extractor.extractToDirectory(apk, decodeOutput);
+        if (!noLangs) {
+            ExtractionResult langs = new LangsBrExtractor(apktoolPath).extract(apk);
+            extraction = ExtractionMerger.merge(extraction, langs);
+        }
 
         new ExtractionMapWriter()
                 .write(apk.toAbsolutePath().toString(), decodeOutput, extraction, output);

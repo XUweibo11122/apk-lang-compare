@@ -2,6 +2,8 @@ package com.apkcompare.lang;
 
 import com.apkcompare.lang.compare.ResourceComparator;
 import com.apkcompare.lang.extractor.ApktoolResourceExtractor;
+import com.apkcompare.lang.extractor.ExtractionMerger;
+import com.apkcompare.lang.extractor.LangsBrExtractor;
 import com.apkcompare.lang.model.CompareReport;
 import com.apkcompare.lang.model.ExtractionResult;
 import com.apkcompare.lang.report.ConsoleReportWriter;
@@ -33,6 +35,9 @@ public class CompareCommand implements Callable<Integer> {
     @Option(names = "--keep-temp", description = "Keep apktool decode temp directories (compare mode)")
     private boolean keepTemp;
 
+    @Option(names = "--no-langs", description = "Skip langs/*.br lpk language packs inside APK")
+    private boolean noLangs;
+
     @Override
     public Integer call() throws Exception {
         ApkValidation.validateApk(apk1, "apk1");
@@ -41,8 +46,8 @@ public class CompareCommand implements Callable<Integer> {
         Path apktoolPath = ApktoolResourceExtractor.resolveApktool(apktool);
         ApktoolResourceExtractor extractor = new ApktoolResourceExtractor(apktoolPath, keepTemp);
 
-        ExtractionResult extraction1 = extractor.extract(apk1);
-        ExtractionResult extraction2 = extractor.extract(apk2);
+        ExtractionResult extraction1 = extractAll(extractor, apktoolPath, apk1);
+        ExtractionResult extraction2 = extractAll(extractor, apktoolPath, apk2);
 
         CompareReport report = new ResourceComparator()
                 .compare(
@@ -61,5 +66,15 @@ public class CompareCommand implements Callable<Integer> {
         }
 
         return report.identical() ? ApkLangCli.EXIT_IDENTICAL : ApkLangCli.EXIT_DIFFERENT;
+    }
+
+    private ExtractionResult extractAll(ApktoolResourceExtractor extractor, Path apktoolPath, Path apk)
+            throws Exception {
+        ExtractionResult base = extractor.extract(apk);
+        if (noLangs) {
+            return base;
+        }
+        ExtractionResult langs = new LangsBrExtractor(apktoolPath).extract(apk);
+        return ExtractionMerger.merge(base, langs);
     }
 }
