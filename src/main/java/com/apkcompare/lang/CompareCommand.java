@@ -35,7 +35,7 @@ public class CompareCommand implements Callable<Integer> {
     @Option(names = "--keep-temp", description = "Keep apktool decode temp directories (compare mode)")
     private boolean keepTemp;
 
-    @Option(names = "--no-langs", description = "Skip langs/*.br lpk language packs inside APK")
+    @Option(names = "--no-langs", description = "Skip assets/langs/*.br lpk language packs inside APK")
     private boolean noLangs;
 
     @Override

@@ -14,9 +14,11 @@ class LangsBrExtractorTest {
 
     @Test
     void isLangsBrEntry() {
+        assertTrue(LangsBrExtractor.isLangsBrEntry("assets/langs/pack.br"));
+        assertTrue(LangsBrExtractor.isLangsBrEntry("assets/langs/xxxxxx.br"));
         assertTrue(LangsBrExtractor.isLangsBrEntry("langs/pack.br"));
-        assertTrue(LangsBrExtractor.isLangsBrEntry("langs/LANGS.BR"));
-        assertFalse(LangsBrExtractor.isLangsBrEntry("lang/pack.br"));
+        assertFalse(LangsBrExtractor.isLangsBrEntry("assets/lang/pack.br"));
+        assertFalse(LangsBrExtractor.isLangsBrEntry("res/langs/pack.br"));
     }
 
     @Test

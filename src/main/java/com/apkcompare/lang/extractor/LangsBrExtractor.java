@@ -14,11 +14,12 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
- * Extracts strings from {@code langs/*.br} inside an APK: Brotli → (usually ZIP) → {@code *.lpk} per language.
+ * Extracts strings from {@code assets/langs/*.br} inside an APK: Brotli → (usually ZIP) → {@code *.lpk} per language.
  */
 public final class LangsBrExtractor {
 
-    private static final String LANGS_PREFIX = "langs/";
+    private static final String ASSETS_LANGS_PREFIX = "assets/langs/";
+    private static final String LEGACY_LANGS_PREFIX = "langs/";
 
     private final Path apktoolPath;
 
@@ -50,7 +51,7 @@ public final class LangsBrExtractor {
                 mergeFromBrArchive(name, brBytes, localeToStrings, merged);
             }
             if (!foundBr) {
-                merged.addWarning("No langs/*.br found in APK (skipped langs pack comparison)");
+                merged.addWarning("No assets/langs/*.br found in APK (skipped langs pack comparison)");
             }
         }
 
@@ -171,7 +172,10 @@ public final class LangsBrExtractor {
 
     static boolean isLangsBrEntry(String zipEntryName) {
         String n = zipEntryName.replace('\\', '/').toLowerCase();
-        return n.startsWith(LANGS_PREFIX) && n.endsWith(".br");
+        if (!n.endsWith(".br")) {
+            return false;
+        }
+        return n.startsWith(ASSETS_LANGS_PREFIX) || n.startsWith(LEGACY_LANGS_PREFIX);
     }
 
     private static boolean isZipMagic(byte[] data) {

@@ -24,7 +24,7 @@ final class LangsBrTestFixtures {
 
         Path apk = dir.resolve("with-langs.apk");
         try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(apk))) {
-            put(zos, "langs/pack.br", br);
+            put(zos, "assets/langs/pack.br", br);
             put(zos, "AndroidManifest.xml", "<manifest package=\"test\"/>".getBytes(StandardCharsets.UTF_8));
         }
         return apk;

@@ -35,7 +35,7 @@ public class DumpCommand implements Callable<Integer> {
     @Option(names = "--apktool", description = "Path to apktool.jar or apktool executable")
     private Path apktool;
 
-    @Option(names = "--no-langs", description = "Skip langs/*.br lpk language packs inside APK")
+    @Option(names = "--no-langs", description = "Skip assets/langs/*.br lpk language packs inside APK")
     private boolean noLangs;
 
     @Override

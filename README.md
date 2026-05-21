@@ -2,7 +2,7 @@
 
 比较两个 APK 中 `<string>` 多语言资源是否一致：语言列表、各语言的 key 集合、以及相同 key 的译文。
 
-支持 **主包 `res/values*`**（apktool 解码）与 **`langs/*.br` 语言包**（Brotli → ZIP → 各语言 `.lpk`）一并比较。
+支持 **主包 `res/values*`**（apktool 解码）与 **`assets/langs/*.br` 语言包**（Brotli → ZIP → 各语言 `.lpk`）一并比较。
 
 ## 依赖
 
@@ -87,16 +87,16 @@ JSON 示例：
 | `-q`, `--quiet` | 仅输出摘要 |
 | `--apktool <path>` | apktool 路径 |
 | `--keep-temp` | 保留 apktool 解码临时目录（调试） |
-| `--no-langs` | 不解析 APK 内 `langs/*.br` 语言包 |
+| `--no-langs` | 不解析 APK 内 `assets/langs/*.br` 语言包 |
 | `-h`, `--help` | 帮助 |
 
-### `langs/*.br` 语言包（LPK）
+### `assets/langs/*.br` 语言包（LPK）
 
-部分 APK 将**除默认语言外**的资源打成 `.lpk`，再打包为 Brotli 压缩的 `.br`，放在 APK 内 `langs/` 目录，例如 `langs/pack.br`。
+部分 APK 将**除默认语言外**的资源打成 `.lpk`，再打包为 Brotli 压缩的 `.br`，放在 APK 内 `assets/langs/` 目录，例如 `assets/langs/xxxxxx.br`。
 
 比较时会自动：
 
-1. 从 APK（ZIP）读取 `langs/**/*.br`
+1. 从 APK（ZIP）读取 `assets/langs/**/*.br`（也兼容旧路径 `langs/*.br`）
 2. Brotli 解压 → 一般为 ZIP，内含 `en.lpk`、`zh-rCN.lpk` 等
 3. 每个 `.lpk` 按 ZIP 解析其中的 `res/values*/**/*.xml` 的 `<string>`（若非 ZIP 则回退 apktool 解码）
 4. 与主包 apktool 解码结果合并后，再与另一个 APK 做完整 diff
