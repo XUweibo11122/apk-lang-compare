@@ -11,12 +11,12 @@
 
 仓库已包含可执行 fat JAR 与 Apktool：
 
-- 比较工具：[releases/apk-lang-compare-1.0.0-all.jar](releases/apk-lang-compare-1.0.0-all.jar)
+- 比较工具：[releases/apk-lang-compare-1.0.0-all.jar](releases/apk-lang-compare-1.0.0-all.jar)（与 `tools/apk-lang-compare-1.0.0-all.jar` 相同）
 - Apktool：[tools/apktool.jar](tools/apktool.jar)
 - 克隆仓库后运行：
 
 ```powershell
-java -jar releases/apk-lang-compare-1.0.0-all.jar app1.apk app2.apk --apktool tools/apktool.jar
+java -jar tools/apk-lang-compare-1.0.0-all.jar app1.apk app2.apk --apktool tools/apktool.jar
 ```
 
 ## 构建
