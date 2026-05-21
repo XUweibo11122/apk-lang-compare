@@ -39,11 +39,43 @@ gradle wrapper
 
 ## 用法
 
+### 比较两个 APK（子命令 `compare`，可省略）
+
 ```bash
-java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk
-java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk -o report.json
-java -jar build/libs/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk --apktool tools/apktool.jar -q
+java -jar tools/apk-lang-compare-1.0.0-all.jar compare app-v1.apk app-v2.apk
+java -jar tools/apk-lang-compare-1.0.0-all.jar app-v1.apk app-v2.apk
+java -jar tools/apk-lang-compare-1.0.0-all.jar compare app-v1.apk app-v2.apk -o report.json
+java -jar tools/apk-lang-compare-1.0.0-all.jar compare app-v1.apk app-v2.apk --apktool tools/apktool.jar -q
 ```
+
+### 导出单个 APK 的字符串 Map（子命令 `dump`）
+
+解码结果**保留在磁盘**，同时将 `Map<语言标签, Map<key, value>>` 写入 JSON：
+
+```powershell
+java -jar tools/apk-lang-compare-1.0.0-all.jar dump app.apk -o strings-map.json --apktool tools/apktool.jar
+java -jar tools/apk-lang-compare-1.0.0-all.jar dump app.apk -o strings-map.json -d D:\out\app-decoded
+```
+
+- `-o` / `--output`：JSON 输出路径（必填）
+- `-d` / `--decode-dir`：apktool 解码目录（可选，默认 APK 同目录下 `<apk名>-decoded`）
+
+JSON 示例：
+
+```json
+{
+  "apk": "D:/app.apk",
+  "decodeDir": "D:/app-decoded",
+  "stringCount": 1000,
+  "locales": {
+    "default": { "app_name": "My App" },
+    "zh-CN": { "app_name": "我的应用" }
+  },
+  "warnings": []
+}
+```
+
+解码后的 `res/values*`、`AndroidManifest.xml` 等在 `decodeDir` 中，可自行查看。
 
 ### 选项
 

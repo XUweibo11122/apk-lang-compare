@@ -76,7 +76,7 @@ public final class ResourceComparator {
                 identical, apk1Path, apk2Path, localeDiff, byLocale, warnings, apk1Count, apk2Count);
     }
 
-    static int countStrings(Map<String, Map<String, String>> localeToStrings) {
+    public static int countStrings(Map<String, Map<String, String>> localeToStrings) {
         int total = 0;
         for (Map<String, String> strings : localeToStrings.values()) {
             total += strings.size();

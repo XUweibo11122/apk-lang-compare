@@ -27,13 +27,22 @@ public final class ApktoolResourceExtractor implements StringResourceExtractor {
     public ExtractionResult extract(Path apkPath) throws Exception {
         Path tempDir = Files.createTempDirectory("apk-lang-");
         try {
-            runApktool(apkPath, tempDir);
-            return scanDecodedResources(tempDir);
+            return extractToDirectory(apkPath, tempDir);
         } finally {
             if (!keepTemp) {
                 deleteRecursive(tempDir);
             }
         }
+    }
+
+    /**
+     * Decodes APK into {@code decodeDir} (apktool {@code -o}) and scans {@code res/values*} strings.
+     * The decoded directory is kept on disk.
+     */
+    public ExtractionResult extractToDirectory(Path apkPath, Path decodeDir) throws Exception {
+        Files.createDirectories(decodeDir);
+        runApktool(apkPath, decodeDir);
+        return scanDecodedResources(decodeDir);
     }
 
     public ExtractionResult scanDecodedResources(Path decodedRoot) throws IOException {
